@@ -1,0 +1,5 @@
+ipfs/[1-3]/*
+!ipfs/[1-3]/swarm.key
+
+cluster/[1-3]/*
+!cluster/[1-3]/peerstore

@@ -1,0 +1,80 @@
+version: '3.7'
+
+x-ipfs-common: &ipfs-common
+  environment:
+    LIBP2P_FORCE_PNET: 1 # enforces private network mode
+  image: ipfs/go-ipfs@sha256:d345563bc64544b03a0a4f16b1b98a1b52f31377af4c6c76b334c90f4ac6836b
+  volumes:
+    - &ipfs-v-entry     ./ipfs/start_ipfs:/usr/local/bin/start_ipfs # copy of original entrypoint with some modifications
+    - &ipfs-v-swarm-key ./ipfs/swarm.key:/data/swarm.key # the presence of this causes IPFS to run as a private network
+  deploy:
+    mode: global
+
+x-peer-common: &peer-common
+  env_file: ./cluster/.env
+  image: ipfs/ipfs-cluster@sha256:85c73504ffd3de7b2aa488931f64b4aa6753117be2b1ffeb43e9bfcc46ae08c2
+
+services:
+  ipfs1:
+    <<: *ipfs-common
+    volumes:
+      - *ipfs-v-entry
+      - *ipfs-v-swarm-key
+      - ./ipfs/1:/data/ipfs
+
+  ipfs2:
+    <<: *ipfs-common
+    volumes:
+      - *ipfs-v-entry
+      - *ipfs-v-swarm-key
+      - ./ipfs/2:/data/ipfs
+
+  ipfs3:
+    <<: *ipfs-common
+    volumes:
+      - *ipfs-v-entry
+      - *ipfs-v-swarm-key
+      - ./ipfs/3:/data/ipfs
+
+  peer1:
+    <<: *peer-common
+    depends_on:
+      - ipfs1
+    environment:
+      CLUSTER_ID: QmZKMjcxfGHBAp49LGgNuZPoD5rDvrm4UHUD6XZWDUTmag
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs1/tcp/5001
+      CLUSTER_IPFSPROXY_NODEMULTIADDRESS: /dns4/ipfs1/tcp/5001
+      CLUSTER_PEERNAME: 91e958e47896
+      CLUSTER_PRIVATEKEY: 9095:9094-9095'
+    volumes:
+      - ./cluster/1:/data/ipfs-cluster
+
+  peer2:
+    <<: *peer-common
+    depends_on:
+      - ipfs2
+    environment:
+      CLUSTER_ID: QmPEgtToNJDea8bTQs27VzCBrKAqYZ3tNy4beiEZh5Mivm
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs2/tcp/5001
+      CLUSTER_IPFSPROXY_NODEMULTIADDRESS: /dns4/ipfs2/tcp/5001
+      CLUSTER_PEERNAME: 508e8453da60
+      CLUSTER_PRIVATEKEY: 'TODO: insert the private key here'
+    ports:
+      - '9096-9097:9094-9095'
+    volumes:
+      - ./cluster/2:/data/ipfs-cluster
+
+  peer3:
+    <<: *peer-common
+    depends_on:
+      - ipfs3
+    environment:
+      CLUSTER_ID: QmXvghR8gvzPRvFTaeu36WSzB8MyEJoEztYiJPR7iJFaxf
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs3/tcp/5001
+      CLUSTER_IPFSPROXY_NODEMULTIADDRESS: /dns4/ipfs3/tcp/5001
+      CLUSTER_PEERNAME: 504afa3b30f9
+      CLUSTER_PRIVATEKEY: 'TODO: insert the private key here'
+    ports:
+      - '9098-9099:9094-9095'
+    volumes:
+      - ./cluster/3:/data/ipfs-cluster
