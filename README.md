@@ -34,11 +34,7 @@ If a pin request is sent to any Cluster instance then it will be pinned on all I
 
 ### Contributors
 
-Dean
-
 #### - [@dpbricher]
-
-Francesco
 
 #### - [@makevoid]
 
