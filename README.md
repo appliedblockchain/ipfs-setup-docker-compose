@@ -51,3 +51,18 @@ Francesco
 You need set CLUSTER_SECRET for the project to work - check CLUSTER_PRIVATEKEY in the docker-compose.yml file.
 
 https://github.com/ipfs/ipfs-cluster-website/blob/master/content/documentation/configuration.md#initializing-a-default-configuration-file
+
+### Other notes
+
+This setup is meant to be ran on both docker-compose, docker swarm (and potentially kube) using the same docker-compose.yml file
+
+On docker swarm we use this command to deploy:
+
+```
+docker stack deploy -c docker-compose.yml --with-registry-auth ipfs
+```
+
+You can pass `--orchestrator=kubernetes` to docker stack deploy and that will deploy to kubernetes
+
+
+To try it for example using the `ipfs` package ( https://github.com/ipfs/js-ipfs ) for JS
