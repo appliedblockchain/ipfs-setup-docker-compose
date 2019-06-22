@@ -64,5 +64,4 @@ docker stack deploy -c docker-compose.yml --with-registry-auth ipfs
 
 You can pass `--orchestrator=kubernetes` to docker stack deploy and that will deploy to kubernetes
 
-
 To try it for example using the `ipfs` package ( https://github.com/ipfs/js-ipfs ) for JS
